@@ -1,59 +1,67 @@
 import React, { Component } from 'react'
 import { Consumer } from '../../context';
 import TextInputGroup from '../Layout/TextInputGroup';
-import {v4 as uuidv4} from 'uuid';
+import axios from 'axios';
 
 class AddContact extends Component {
+    constructor(props){
+        super(props);
 
-    state={
-        name:'',
-        email:'',
-        phone:'',
-        errors:{}
-    };
-
-    onSubmit = (dispatch,e) =>{
-        e.preventDefault();
-        
-        const {name,email,phone}=this.state;
-
-        //Check for Error-
-        if(name ===''|name ===' '){
-            this.setState({errors:{name:'Name is required'}});
-            return;
-        }
-        if(email ===''|email ===' '){
-            this.setState({errors:{email:'Name is required'}});
-            return;
-        }
-        if(phone ===''|phone ===' '){
-            this.setState({errors:{phone:'Name is required'}});
-            return;
-        }
-        
-
-        const newContact = {
-            id:uuidv4,
-            name,
-            email,
-            phone
-        }
-
-        dispatch({type:'ADD_CONTACT',payload:newContact})
-        
-        //Clear Field
-        this.setState({
+        this.state={
             name:'',
             email:'',
             phone:'',
             errors:{}
-        })
+        };
 
-        this.props.history.push("/");
+        this.onSubmit = async (dispatch,e) => {
+            e.preventDefault();
+            
+            const {name,email,phone}=this.state;
+    
+            //Check for Error-
+            if(name ===''|name ===' '){
+                this.setState({errors:{name:'Name is required'}});
+                return;
+            }
+            if(email ===''|email ===' '){
+                this.setState({errors:{email:'Name is required'}});
+                return;
+            }
+            if(phone ===''|phone ===' '){
+                this.setState({errors:{phone:'Name is required'}});
+                return;
+            }
+            
+    
+            const newContact = {
+                name,
+                email,
+                phone
+            }
+    
+            const res=await axios.post(`https://jsonplaceholder.typicode.com/users`,newContact)
+                
+            dispatch({type:'ADD_CONTACT',payload:res.data});
+    
+            
+            
+            //Clear Field
+            this.setState({
+                name:'',
+                email:'',
+                phone:'',
+                errors:{}
+            })
+    
+            this.props.history.push("/");
+        }
+    
+        this.onChange = (e) =>this.setState({[e.target.name]:e.target.value});
+
     }
 
-    onChange = (e) =>this.setState({[e.target.name]:e.target.value});
-
+    
 
     render() {
         const {name,email,phone,errors}=this.state;

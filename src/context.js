@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { Component } from 'react'
 
 const Context=React.createContext();
@@ -27,32 +28,18 @@ export class Provider extends Component {
         super(props);
 
         this.state={
-            contacts:[
-                {
-                    id:1,
-                    name:'John Doe',
-                    email:'jdoe@mail.com',
-                    phone:'55-555-8888'
-                },
-                {
-                    id:2,
-                    name:'Steve Smith',
-                    email:'steve@mail.com',
-                    phone:'22-333-777'
-                },
-                {
-                    id:3,
-                    name:'Karen Williams',
-                    email:'karen@mail.com',
-                    phone:'99-111-555'
-                }
-            ],
-    
-            dispatch:action=>{
+            contacts:[],   
+        dispatch:action=>{
                 this.setState(state=>reducer(state,action));
             }
-        }
+        };
 
+    }
+
+    async componentDidMount(){
+        const res = await axios.get('https://jsonplaceholder.typicode.com/users')
+            
+        this.setState({contacts:res.data});
     }
     
     render(){

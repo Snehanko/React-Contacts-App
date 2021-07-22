@@ -1,9 +1,13 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Consumer } from '../../context';
+import { Link } from 'react-router-dom';
 
-import {FaSortDown} from 'react-icons/fa'
-import {AiFillDelete} from 'react-icons/ai'
+import {FaSortDown} from 'react-icons/fa';
+import {AiFillDelete} from 'react-icons/ai';
+import {FaPencilAlt} from 'react-icons/fa';
+import axios from 'axios';
+
 
 class Contacts extends Component {
     // static propTypes={
@@ -28,8 +32,15 @@ class Contacts extends Component {
         this.setState({showContactInfo:!this.state.showContactInfo});
     }
 
-    onDeleteClick=(id,dispatch)=>{
-        dispatch({type:'DELETE_CONTACT',payload:id}) 
+    onDeleteClick= async (id,dispatch)=>{
+        try{
+            await axios.delete(`https://jsonplaceholder.typicode.com/users/${id}`);
+            dispatch({type:'DELETE_CONTACT',payload:id})  ;
+        }
+        catch(e){
+            dispatch({type:'DELETE_CONTACT',payload:id})  ;
+        }
+
     }
 
     render() {
@@ -47,6 +58,7 @@ class Contacts extends Component {
                                 <h4>{name}{' '}
                                 <FaSortDown onClick={this.onShowClick} style={{cursor:'pointer'}}/>
 
+                               <Link to={`contact/edit/${id}`}><FaPencilAlt style={{cursor:'pointer',float:'right',color:'black',marginLeft:'1rem'}}/></Link>
                                 <AiFillDelete  style={{cursor:'pointer',float:'right',color:'red'}} onClick={this.onDeleteClick.bind(this,id,dispatch)}/>
                             </h4>
                             {showContactInfo ? <ul className="list-group">
